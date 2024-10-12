@@ -21,12 +21,26 @@ def count():
     num = int(input("> "))
     for i in range(num + 1):
         print(f"{i} !")
-    print("Completed, have a nice day!")
 
-
+def test():
+    print("Let's test your programming knowledge.")
+    print("Why do we use methods?")
+    print("1. To repeat a statement multiple times.")
+    print("2. To decompose a program into several small subroutines.")
+    print("3. To determine the execution time of a program.")
+    print("4. To interrupt the execution of a program.")
+    while True:
+        answer = int(input("> "))
+        if answer == 2:
+            print("Test completed")
+            break
+        else:
+            print("Please, try again.")
+    print("Congratulations, have a nice day!")
 
 # Виклик
 greet('ChatBot', 2024)
 remind_name()
 guess_age()
 count()
+test()
