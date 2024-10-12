@@ -16,9 +16,17 @@ def guess_age():
     age = (rem3 * 70 + rem5 * 21 + rem7 * 15) % 105
     print(f"Your age is {age}; that's a good time to start programming!")
 
+def count():
+    print("Now I will prove to you that I can count to any number you want.")
+    num = int(input("> "))
+    for i in range(num + 1):
+        print(f"{i} !")
+    print("Completed, have a nice day!")
+
 
 
 # Виклик
 greet('ChatBot', 2024)
 remind_name()
 guess_age()
+count()
