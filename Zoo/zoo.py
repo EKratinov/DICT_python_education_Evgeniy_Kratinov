@@ -132,8 +132,14 @@ It looks fine!
 
 
 animals = [camel, lion, deer, goose, bat, rabbit]
-user_input = int(input("Please enter the number of the habitat you would like to view: "))
-print(animals[user_input])
-print("You've reached the end of the program.")
 
+
+while True:
+    user_input = input("Please enter the number of the habitat you would like to view (or 'exit' to quit): ")
+    if user_input == "exit" or "exit ":
+        print("See you later!")
+        break
+    else:
+        habitat_number = int(user_input)
+        print(animals[habitat_number])
 
