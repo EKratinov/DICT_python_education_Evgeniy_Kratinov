@@ -1,4 +1,3 @@
-result = []
 
 def print_help():
     print("Available formatters: plain bold italic header link inline-code ordered-list unordered-list new-line")
@@ -68,6 +67,7 @@ def apply_formatter(command):
         return None
 
 def main():
+    result = []
     print("Choose a formatter or type !help for help")
     while True:
         command = input("Choose a formatter: ")
