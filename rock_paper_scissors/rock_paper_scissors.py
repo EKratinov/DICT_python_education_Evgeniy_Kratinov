@@ -8,14 +8,23 @@ def get_user_choice():
         choice = input("Enter your choice: ").lower()
     return choice
 
-def get_computer_winning_choice(user_choice):
-    win_choices = {"rock": "paper", "scissors": "rock", "paper": "scissors"}
-    return win_choices[user_choice]
+def get_computer_choice():
+    return random.choice(["rock", "scissors", "paper"])
+
+def determine_winner(user_choice, computer_choice):
+    if user_choice == computer_choice:
+        return "It's a draw!"
+    elif (user_choice == "rock" and computer_choice == "scissors") or \
+         (user_choice == "scissors" and computer_choice == "paper") or \
+         (user_choice == "paper" and computer_choice == "rock"):
+        return "Well done. The computer chose " + computer_choice + " and failed"
+    else:
+        return "Sorry, but the computer chose " + computer_choice
 
 def main():
     user_choice = get_user_choice()
-    computer_choice = get_computer_winning_choice(user_choice)
-    print(f"Sorry, but the computer chose {computer_choice}")
+    computer_choice = get_computer_choice()
+    print(determine_winner(user_choice, computer_choice))
 
 if __name__ == "__main__":
     main()
