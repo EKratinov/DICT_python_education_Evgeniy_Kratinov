@@ -1,17 +1,21 @@
 import random
 
-def get_computer_choice():
-    return random.choice(["rock", "scissors", "paper"])
+def get_computer_choice(options):
+    return random.choice(options)
 
-def determine_winner(user_choice, computer_choice):
+def determine_winner(user_choice, computer_choice, options):
     if user_choice == computer_choice:
         return f"There is a draw ({computer_choice})", 50
-    elif (user_choice == "rock" and computer_choice == "scissors") or \
-         (user_choice == "scissors" and computer_choice == "paper") or \
-         (user_choice == "paper" and computer_choice == "rock"):
-        return f"Well done. The computer chose {computer_choice} and failed", 100
     else:
-        return f"Sorry, but the computer chose {computer_choice}", 0
+        # Логика для определения побед и поражений
+        half = len(options) // 2
+        index = options.index(user_choice)
+        winning_options = options[index + 1: index + 1 + half]
+
+        if computer_choice in winning_options:
+            return f"Sorry, but the computer chose {computer_choice}", 0
+        else:
+            return f"Well done. The computer chose {computer_choice} and failed", 100
 
 def read_rating(user_name):
     try:
@@ -21,8 +25,9 @@ def read_rating(user_name):
                 if name == user_name:
                     return int(score)
     except FileNotFoundError:
+        # Если файл отсутствует, создаем пустой файл
         with open("rating.txt", "w") as file:
-            pass
+            pass  # Просто создаем файл
     return 0
 
 def write_rating(user_name, rating):
@@ -45,24 +50,34 @@ def write_rating(user_name, rating):
             file.write(f"{user_name} {rating}\n")
 
 def main():
+    # Получение имени пользователя
     user_name = input("Enter your name: ")
     print(f"Hello, {user_name}")
 
-
+    # Получение начального рейтинга
     rating = read_rating(user_name)
 
+    # Пользователь задаёт список опций
+    options_input = input("Enter the options separated by commas (or press Enter for default): ").strip()
+    if options_input:
+        options = options_input.split(",")
+    else:
+        options = ["rock", "scissors", "paper"]  # Опции по умолчанию
 
+    print("Okay, let's start")
+
+    # Основной игровой цикл
     while True:
-        user_choice = input("Enter your choice (rock, scissors, paper, !rating, or !exit): ").lower()
+        user_choice = input()
         if user_choice == "!exit":
             print("Bye!")
             write_rating(user_name, rating)
             break
         elif user_choice == "!rating":
             print(f"Your rating: {rating}")
-        elif user_choice in ["rock", "scissors", "paper"]:
-            computer_choice = get_computer_choice()
-            result, points = determine_winner(user_choice, computer_choice)
+        elif user_choice in options:
+            computer_choice = get_computer_choice(options)
+            result, points = determine_winner(user_choice, computer_choice, options)
             print(result)
             rating += points
         else:
