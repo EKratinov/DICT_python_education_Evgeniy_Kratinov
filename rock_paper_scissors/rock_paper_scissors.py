@@ -3,11 +3,11 @@ import random
 def get_computer_choice(options):
     return random.choice(options)
 
+
 def determine_winner(user_choice, computer_choice, options):
     if user_choice == computer_choice:
         return f"There is a draw ({computer_choice})", 50
     else:
-        # Логика для определения побед и поражений
         half = len(options) // 2
         index = options.index(user_choice)
         winning_options = options[index + 1: index + 1 + half]
@@ -17,6 +17,7 @@ def determine_winner(user_choice, computer_choice, options):
         else:
             return f"Well done. The computer chose {computer_choice} and failed", 100
 
+
 def read_rating(user_name):
     try:
         with open("rating.txt", "r") as file:
@@ -25,10 +26,10 @@ def read_rating(user_name):
                 if name == user_name:
                     return int(score)
     except FileNotFoundError:
-        # Если файл отсутствует, создаем пустой файл
         with open("rating.txt", "w") as file:
-            pass  # Просто создаем файл
+            pass
     return 0
+
 
 def write_rating(user_name, rating):
     try:
@@ -49,26 +50,24 @@ def write_rating(user_name, rating):
         if not updated:
             file.write(f"{user_name} {rating}\n")
 
+
 def main():
-    # Получение имени пользователя
     user_name = input("Enter your name: ")
     print(f"Hello, {user_name}")
 
-    # Получение начального рейтинга
     rating = read_rating(user_name)
 
-    # Пользователь задаёт список опций
     options_input = input("Enter the options separated by commas (or press Enter for default): ").strip()
     if options_input:
         options = options_input.split(",")
     else:
-        options = ["rock", "scissors", "paper"]  # Опции по умолчанию
+        options = ["rock", "scissors", "paper"]
 
     print("Okay, let's start")
 
-    # Основной игровой цикл
+
     while True:
-        user_choice = input()
+        user_choice = input("> ")
         if user_choice == "!exit":
             print("Bye!")
             write_rating(user_name, rating)
@@ -82,6 +81,7 @@ def main():
             rating += points
         else:
             print("Invalid input")
+
 
 if __name__ == "__main__":
     main()
