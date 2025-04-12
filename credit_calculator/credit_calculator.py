@@ -60,7 +60,7 @@ def calculate_annuity(args):
         payment = float(args["payment"])
         periods = int(float(args["periods"]))
         x = math.pow(1 + i, periods)
-        principal = round(payment / (i * x / (x - 1)))
+        principal = math.floor(payment / (i * x / (x - 1)))
         print(f"Your loan principal = {principal}!")
         print(f"Overpayment = {int(payment * periods - principal)}")
 
