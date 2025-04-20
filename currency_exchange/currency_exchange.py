@@ -1,14 +1,15 @@
-def convert_currency():
+def convert_multiple_currencies():
     mycoins = float(input("Please, enter the number of mycoins you have: > "))
 
+    exchange_rates = {
+        "ARS": 0.82,
+        "HNL": 0.17,
+        "AUD": 1.9622,
+        "MAD": 0.208
+    }
 
-    exchange_rate = float(input("Please, enter the exchange rate: > "))
+    for currency, rate in exchange_rates.items():
+        converted_amount = round(mycoins * rate, 2)
+        print(f"I will get {converted_amount} {currency} from the sale of {mycoins} mycoins.")
 
-
-    dollars = round(mycoins * exchange_rate, 2)
-
-
-    print(f"The total amount of dollars: {dollars}")
-
-
-convert_currency()
+convert_multiple_currencies()
