@@ -37,7 +37,8 @@ def display_game(state):
     for idx, piece in enumerate(state["player"], 1):
         print(f"{idx}: {piece}")
 
-    status_msg = "Computer is about to make a move. Press Enter to continue ..." if state["turn"] == "computer" else "It's your turn to make a move. Enter your command."
+    status_msg = "Computer is about to make a move. Press Enter to continue ..." if state[
+                                                                                        "turn"] == "computer" else "It's your turn to make a move. Enter your command."
     print(f"\nStatus: {status_msg}")
 
 
@@ -55,20 +56,54 @@ def check_game_end(state):
     return None
 
 
-def get_player_move(player_pieces):
+def is_valid_move(piece, snake, move):
+    left_match, right_match = snake[0][0], snake[-1][1]
+    if (move < 0 and piece[1] == left_match) or (move > 0 and piece[0] == right_match):
+        return True
+    return False
+
+
+def rotate_piece(piece):
+    return [piece[1], piece[0]]
+
+
+def evaluate_piece_values(snake, pieces):
+    counts = {i: 0 for i in range(7)}
+    for piece in snake + pieces:
+        counts[piece[0]] += 1
+        counts[piece[1]] += 1
+
+    return {tuple(piece): counts[piece[0]] + counts[piece[1]] for piece in pieces}
+
+
+def get_best_computer_move(computer_pieces, snake):
+    values = evaluate_piece_values(snake, computer_pieces)
+    sorted_pieces = sorted(computer_pieces, key=lambda x: values[tuple(x)], reverse=True)
+
+    for piece in sorted_pieces:
+        if is_valid_move(piece, snake, 1):
+            return computer_pieces.index(piece) + 1
+        elif is_valid_move(rotate_piece(piece), snake, 1):
+            return computer_pieces.index(piece) + 1
+
+    return 0
+
+
+def get_player_move(player_pieces, snake):
     while True:
         try:
             move = int(input("\nEnter your move: "))
             if abs(move) > len(player_pieces):
                 print("Invalid input. Please try again.")
-            else:
+                continue
+
+            piece = player_pieces[abs(move) - 1]
+            if is_valid_move(piece, snake, move) or is_valid_move(rotate_piece(piece), snake, move):
                 return move
+
+            print("Illegal move. Please try again.")
         except ValueError:
             print("Invalid input. Please try again.")
-
-
-def computer_move(computer_pieces):
-    return random.randint(-len(computer_pieces), len(computer_pieces))
 
 
 while True:
@@ -90,18 +125,20 @@ while True:
         break
 
     if game_state["turn"] == "player":
-        move = get_player_move(game_state["player"])
+        move = get_player_move(game_state["player"], game_state["snake"])
         if move == 0 and game_state["stock"]:
             game_state["player"].append(game_state["stock"].pop())
         else:
             piece = game_state["player"].pop(abs(move) - 1)
             game_state["snake"].insert(0, piece) if move < 0 else game_state["snake"].append(piece)
+
         game_state["turn"] = "computer"
     else:
-        move = computer_move(game_state["computer"])
+        move = get_best_computer_move(game_state["computer"], game_state["snake"])
         if move == 0 and game_state["stock"]:
             game_state["computer"].append(game_state["stock"].pop())
         else:
             piece = game_state["computer"].pop(abs(move) - 1)
             game_state["snake"].insert(0, piece) if move < 0 else game_state["snake"].append(piece)
+
         game_state["turn"] = "player"
