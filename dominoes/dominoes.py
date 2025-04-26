@@ -38,8 +38,27 @@ while True:
         break
 
 
-print(f"Stock pieces: {stock}")
-print(f"Computer pieces: {computer_pieces}")
-print(f"Player pieces: {player_pieces}")
-print(f"Domino snake: [{start_piece}]")
-print(f"Status: {first_player}")
+def display_game(stock, computer_pieces, player_pieces, domino_snake, status):
+    print("=" * 70)
+    print(f"Stock size: {len(stock)}")
+    print(f"Computer pieces: {len(computer_pieces)}\n")
+
+
+    if len(domino_snake) <= 6:
+        print("Domino snake:", domino_snake)
+    else:
+        print("Domino snake:", f"{domino_snake[:3]} ... {domino_snake[-3:]}")
+
+
+    print("\nYour pieces:")
+    for idx, piece in enumerate(player_pieces, 1):
+        print(f"{idx}: {piece}")
+
+
+    if status == "computer":
+        print("\nStatus: Computer is about to make a move. Press Enter to continue ...")
+    else:
+        print("\nStatus: It's your turn to make a move. Enter your command.")
+
+
+display_game(stock, computer_pieces, player_pieces, [start_piece], first_player)
