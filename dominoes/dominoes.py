@@ -17,10 +17,17 @@ def distribute_pieces(domino_set):
 def determine_start_piece(player_pieces, computer_pieces):
     max_double, starter = None, None
 
-    for piece in player_pieces + computer_pieces:
+    for piece in player_pieces[:]:
         if piece[0] == piece[1]:
             if max_double is None or piece[0] > max_double[0]:
-                max_double, starter = piece, "player" if piece in player_pieces else "computer"
+                max_double, starter = piece, "player"
+                player_pieces.remove(piece)
+
+    for piece in computer_pieces[:]:
+        if piece[0] == piece[1]:
+            if max_double is None or piece[0] > max_double[0]:
+                max_double, starter = piece, "computer"
+                computer_pieces.remove(piece)
 
     return max_double, starter if max_double else (None, None)
 
@@ -37,8 +44,7 @@ def display_game(state):
     for idx, piece in enumerate(state["player"], 1):
         print(f"{idx}: {piece}")
 
-    status_msg = "Computer is about to make a move. Press Enter to continue ..." if state[
-                                                                                        "turn"] == "computer" else "It's your turn to make a move. Enter your command."
+    status_msg = "Computer is about to make a move. Press Enter to continue ..." if state["turn"] == "computer" else "It's your turn to make a move. Enter your command."
     print(f"\nStatus: {status_msg}")
 
 
@@ -58,8 +64,12 @@ def check_game_end(state):
 
 def is_valid_move(piece, snake, move):
     left_match, right_match = snake[0][0], snake[-1][1]
+
     if (move < 0 and piece[1] == left_match) or (move > 0 and piece[0] == right_match):
         return True
+    if (move < 0 and rotate_piece(piece)[1] == left_match) or (move > 0 and rotate_piece(piece)[0] == right_match):
+        return True
+
     return False
 
 
@@ -106,6 +116,14 @@ def get_player_move(player_pieces, snake):
             print("Invalid input. Please try again.")
 
 
+def place_piece(piece, snake, move):
+    if is_valid_move(piece, snake, move):
+        snake.insert(0, piece) if move < 0 else snake.append(piece)
+    elif is_valid_move(rotate_piece(piece), snake, move):
+        piece = rotate_piece(piece)
+        snake.insert(0, piece) if move < 0 else snake.append(piece)
+
+
 while True:
     domino_set = generate_domino_set()
     game_state = distribute_pieces(domino_set)
@@ -130,7 +148,7 @@ while True:
             game_state["player"].append(game_state["stock"].pop())
         else:
             piece = game_state["player"].pop(abs(move) - 1)
-            game_state["snake"].insert(0, piece) if move < 0 else game_state["snake"].append(piece)
+            place_piece(piece, game_state["snake"], move)
 
         game_state["turn"] = "computer"
     else:
@@ -139,6 +157,6 @@ while True:
             game_state["computer"].append(game_state["stock"].pop())
         else:
             piece = game_state["computer"].pop(abs(move) - 1)
-            game_state["snake"].insert(0, piece) if move < 0 else game_state["snake"].append(piece)
+            place_piece(piece, game_state["snake"], move)
 
         game_state["turn"] = "player"
