@@ -10,7 +10,7 @@ def distribute_pieces(domino_set):
     return {
         "stock": domino_set[:14],
         "player": domino_set[14:21],
-        "computer": domino_set[21:28]
+        "computer": domino_set[21:29]
     }
 
 
@@ -38,7 +38,7 @@ def display_game(state):
     print(f"Computer pieces: {len(state['computer'])}\n")
 
     snake = state["snake"]
-    print(f"Domino snake: {snake if len(snake) <= 6 else f'{snake[:3]} ... {snake[-3:]}'}")
+    print(f"Domino snake: {snake if len(snake) <= 6 else f'{snake[:3]} ... {snake[-3:]}' }")
 
     print("\nYour pieces:")
     for idx, piece in enumerate(state["player"], 1):
@@ -55,8 +55,7 @@ def check_game_end(state):
         return "Status: The game is over. The computer won!"
 
     first, last = state["snake"][0][0], state["snake"][-1][1]
-    if sum(piece.count(first) for piece in state["snake"]) == 8 or sum(
-            piece.count(last) for piece in state["snake"]) == 8:
+    if sum(piece.count(first) for piece in state["snake"]) == 8 or sum(piece.count(last) for piece in state["snake"]) == 8:
         return "Status: The game is over. It's a draw!"
 
     return None
@@ -67,15 +66,21 @@ def is_valid_move(piece, snake, move):
 
     if (move < 0 and piece[1] == left_match) or (move > 0 and piece[0] == right_match):
         return True
-    if (move < 0 and rotate_piece(piece)[1] == left_match) or (move > 0 and rotate_piece(piece)[0] == right_match):
-        return True
-
     return False
 
 
 def rotate_piece(piece):
     return [piece[1], piece[0]]
 
+def place_piece(piece, snake, move):
+    left_match, right_match = snake[0][0], snake[-1][1]
+
+    if move < 0 and piece[1] != left_match:
+        piece = rotate_piece(piece)
+    elif move > 0 and piece[0] != right_match:
+        piece = rotate_piece(piece)
+
+    snake.insert(0, piece) if move < 0 else snake.append(piece)
 
 def evaluate_piece_values(snake, pieces):
     counts = {i: 0 for i in range(7)}
@@ -103,6 +108,15 @@ def get_player_move(player_pieces, snake):
     while True:
         try:
             move = int(input("\nEnter your move: "))
+            if move == 0:
+                if game_state["stock"]:
+                    game_state["player"].append(game_state["stock"].pop())
+                    print("\n You took a piece from the reserve.")
+                    return 0
+                else:
+                    print("\n The reserve is empty.")
+                    continue
+
             if abs(move) > len(player_pieces):
                 print("Invalid input. Please try again.")
                 continue
@@ -114,16 +128,6 @@ def get_player_move(player_pieces, snake):
             print("Illegal move. Please try again.")
         except ValueError:
             print("Invalid input. Please try again.")
-
-
-def place_piece(piece, snake, move):
-    if is_valid_move(piece, snake, move):
-        snake.insert(0, piece) if move < 0 else snake.append(piece)
-    elif is_valid_move(rotate_piece(piece), snake, move):
-        piece = rotate_piece(piece)
-        snake.insert(0, piece) if move < 0 else snake.append(piece)
-
-
 while True:
     domino_set = generate_domino_set()
     game_state = distribute_pieces(domino_set)
@@ -144,9 +148,7 @@ while True:
 
     if game_state["turn"] == "player":
         move = get_player_move(game_state["player"], game_state["snake"])
-        if move == 0 and game_state["stock"]:
-            game_state["player"].append(game_state["stock"].pop())
-        else:
+        if move != 0:
             piece = game_state["player"].pop(abs(move) - 1)
             place_piece(piece, game_state["snake"], move)
 
