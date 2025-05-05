@@ -1,9 +1,7 @@
 import random
 
-
 def generate_domino_set():
     return [[i, j] for i in range(7) for j in range(i, 7)]
-
 
 def distribute_pieces(domino_set):
     random.shuffle(domino_set)
@@ -12,7 +10,6 @@ def distribute_pieces(domino_set):
         "player": domino_set[14:21],
         "computer": domino_set[21:29]
     }
-
 
 def determine_start_piece(player_pieces, computer_pieces):
     max_double, starter = None, None
@@ -31,7 +28,6 @@ def determine_start_piece(player_pieces, computer_pieces):
 
     return max_double, starter if max_double else (None, None)
 
-
 def display_game(state):
     print("=" * 70)
     print(f"Stock size: {len(state['stock'])}")
@@ -47,7 +43,6 @@ def display_game(state):
     status_msg = "Computer is about to make a move. Press Enter to continue ..." if state["turn"] == "computer" else "It's your turn to make a move. Enter your command."
     print(f"\nStatus: {status_msg}")
 
-
 def check_game_end(state):
     if not state["player"]:
         return "Status: The game is over. You won!"
@@ -60,14 +55,12 @@ def check_game_end(state):
 
     return None
 
-
 def is_valid_move(piece, snake, move):
     left_match, right_match = snake[0][0], snake[-1][1]
 
     if (move < 0 and piece[1] == left_match) or (move > 0 and piece[0] == right_match):
         return True
     return False
-
 
 def rotate_piece(piece):
     return [piece[1], piece[0]]
@@ -90,7 +83,6 @@ def evaluate_piece_values(snake, pieces):
 
     return {tuple(piece): counts[piece[0]] + counts[piece[1]] for piece in pieces}
 
-
 def get_best_computer_move(computer_pieces, snake):
     values = evaluate_piece_values(snake, computer_pieces)
     sorted_pieces = sorted(computer_pieces, key=lambda x: values[tuple(x)], reverse=True)
@@ -103,7 +95,6 @@ def get_best_computer_move(computer_pieces, snake):
 
     return 0
 
-
 def get_player_move(player_pieces, snake):
     while True:
         try:
@@ -111,10 +102,10 @@ def get_player_move(player_pieces, snake):
             if move == 0:
                 if game_state["stock"]:
                     game_state["player"].append(game_state["stock"].pop())
-                    print("\n You took a piece from the reserve.")
+                    print("\nYou took a piece from the reserve.")
                     return 0
                 else:
-                    print("\n The reserve is empty.")
+                    print("\nThe reserve is empty.")
                     continue
 
             if abs(move) > len(player_pieces):
@@ -128,6 +119,7 @@ def get_player_move(player_pieces, snake):
             print("Illegal move. Please try again.")
         except ValueError:
             print("Invalid input. Please try again.")
+
 while True:
     domino_set = generate_domino_set()
     game_state = distribute_pieces(domino_set)
@@ -160,5 +152,5 @@ while True:
         else:
             piece = game_state["computer"].pop(abs(move) - 1)
             place_piece(piece, game_state["snake"], move)
-
-        game_state["turn"] = "player"
+            
+            game_state["turn"] = "player" if piece[0] == piece[1] else "computer"
