@@ -11,22 +11,25 @@ def distribute_pieces(domino_set):
         "computer": domino_set[21:29]
     }
 
-def determine_start_piece(player_pieces, computer_pieces):
+
+def determine_start_piece(game_state):
     max_double, starter = None, None
 
-    for piece in player_pieces[:]:
-        if piece[0] == piece[1]:
-            if max_double is None or piece[0] > max_double[0]:
-                max_double, starter = piece, "player"
-                player_pieces.remove(piece)
+    for piece in game_state["player"]:
+        if piece[0] == piece[1] and (max_double is None or piece[0] > max_double[0]):
+            max_double, starter = piece, "player"
 
-    for piece in computer_pieces[:]:
-        if piece[0] == piece[1]:
-            if max_double is None or piece[0] > max_double[0]:
-                max_double, starter = piece, "computer"
-                computer_pieces.remove(piece)
+    for piece in game_state["computer"]:
+        if piece[0] == piece[1] and (max_double is None or piece[0] > max_double[0]):
+            max_double, starter = piece, "computer"
 
-    return max_double, starter if max_double else (None, None)
+    if max_double:
+        print(f"\nSelected starting double: {max_double} (placed by {starter})")
+        game_state[starter].remove(max_double)
+        return max_double, "player" if starter == "computer" else "computer"
+
+    return None, None
+
 
 def display_game(state):
     print("=" * 70)
@@ -121,7 +124,8 @@ def get_player_move(player_pieces, snake):
 while True:
     domino_set = generate_domino_set()
     game_state = distribute_pieces(domino_set)
-    start_piece, first_player = determine_start_piece(game_state["player"], game_state["computer"])
+    start_piece, first_player = determine_start_piece(game_state)
+
 
     if start_piece:
         break
