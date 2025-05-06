@@ -57,10 +57,7 @@ def check_game_end(state):
 
 def is_valid_move(piece, snake, move):
     left_match, right_match = snake[0][0], snake[-1][1]
-
-    if (move < 0 and piece[1] == left_match) or (move > 0 and piece[0] == right_match):
-        return True
-    return False
+    return (move < 0 and piece[1] == left_match) or (move > 0 and piece[0] == right_match)
 
 def rotate_piece(piece):
     return [piece[1], piece[0]]
@@ -102,6 +99,7 @@ def get_player_move(player_pieces, snake):
             if move == 0:
                 if game_state["stock"]:
                     game_state["player"].append(game_state["stock"].pop())
+                    game_state["turn"] = "player"
                     print("\nYou took a piece from the reserve.")
                     return 0
                 else:
@@ -143,14 +141,13 @@ while True:
         if move != 0:
             piece = game_state["player"].pop(abs(move) - 1)
             place_piece(piece, game_state["snake"], move)
-
         game_state["turn"] = "computer"
     else:
         move = get_best_computer_move(game_state["computer"], game_state["snake"])
         if move == 0 and game_state["stock"]:
             game_state["computer"].append(game_state["stock"].pop())
+            game_state["turn"] = "player"
         else:
             piece = game_state["computer"].pop(abs(move) - 1)
             place_piece(piece, game_state["snake"], move)
-            
-            game_state["turn"] = "player" if piece[0] == piece[1] else "computer"
+            game_state["turn"] = "player"
